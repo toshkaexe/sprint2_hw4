@@ -1,12 +1,13 @@
 import {UsersRepository} from "../repositories/users-repositiory";
 
-import {v4 as uuidv4} from 'uuid'
+
 import {emailManager} from "../managers/email-manager";
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
 import {LoginInputModel} from "../models/auth/login-model";
 import {add} from 'date-fns/add'
 import {CreateUserInputModel} from "../models/users/users-models";
+import {randomUUID} from "crypto";
 export const authService = {
 
 
@@ -15,7 +16,7 @@ export const authService = {
         const user = await UsersRepository.findByLoginOrEmail(email)
         if (!user) return null
         if (user.emailConfirmation.isConfirmed) return false
-        const newCode = uuidv4()
+        const newCode = randomUUID()
         const expirationDate = add(new Date(), {
             hours: 1
         })
@@ -58,7 +59,7 @@ export const authService = {
                 createdAt: new Date().toISOString(),
             },
             emailConfirmation: {
-                confirmationCode: uuidv4(),
+                confirmationCode: randomUUID(),
                 expirationDate: add(new Date(), {
                     hours: 1,
                     minutes: 3

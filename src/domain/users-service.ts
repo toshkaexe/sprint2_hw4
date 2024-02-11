@@ -1,10 +1,11 @@
-import bcrypt from "bcrypt";
+import * as bcrypt from "bcrypt";
 import {ObjectId, WithId} from "mongodb";
 import {CreateUserInputModel, UserDbModel, userMapper, UserViewModel} from "../models/users/users-models";
 import {UsersRepository} from "../repositories/users-repositiory";
 import {LoginInputModel} from "../models/auth/login-model";
 import {add} from "date-fns/add";
-import {v4 as uuidv4} from "uuid"
+import {randomUUID} from "crypto";
+
 
 
 export class UsersService {
@@ -26,7 +27,7 @@ export class UsersService {
                 "createdAt": new Date().toISOString(),
             },
             emailConfirmation: {
-                confirmationCode: uuidv4(),
+                confirmationCode: randomUUID(),
                 expirationDate: add(new Date(), {
                     hours: 1,
                     minutes: 3

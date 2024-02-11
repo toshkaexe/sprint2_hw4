@@ -74,7 +74,7 @@ yarn add @types/uuid
 yarn add @types/date-fns
 ```
 
-### JSONwebtocken
+### JSONjewebtocken
 ```
 yarn add @types/jsonwebtoken
 ```
