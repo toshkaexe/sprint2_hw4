@@ -65,6 +65,15 @@ yarn ts-jest config:init
 ```
 yarn add express-validator
 ```
+### Для uuid
+```
+yarn add @types/uuid
+```
+### Для date-fns
+```
+yarn add @types/date-fns
+```
+```
 
 ### Для дебага в тестах
 
