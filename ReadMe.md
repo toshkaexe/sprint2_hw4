@@ -73,8 +73,15 @@ yarn add @types/uuid
 ```
 yarn add @types/date-fns
 ```
-```
 
+### JSONwebtocken
+```
+yarn add @types/jsonwebtoken
+```
+### для писем
+```
+yarn add @types/nodemailer
+```
 ### Для дебага в тестах
 
 ```
