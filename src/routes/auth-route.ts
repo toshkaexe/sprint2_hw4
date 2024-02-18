@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express';
-import {StatusCode} from "../models/common";
-import {blogsCollection, postsCollection} from "../db/db";
+import {HTTP_STATUSES} from "../models/common";
+import {blacklistTokens, blogsCollection, postsCollection} from "../db/db";
 import {WithId} from "mongodb";
 import {UserDbModel} from "../models/users/users-models";
 import {UsersService} from "../domain/users-service";
@@ -15,6 +15,7 @@ import {
     registrationValidation
 } from "../middleware/user-already-exist";
 import {authService} from "../domain/auth-service";
+import {verifyTokenInCookie} from "../middleware/verifyTokenInCookie";
 
 
 export const authRoute = Router({})
@@ -24,10 +25,10 @@ authRoute.post('/registration',
     async (req: Request, res: Response): Promise<void> => {
         const user = await authService.createUserAccount(req.body)
         if (!user) {
-            res.sendStatus(StatusCode.BAD_REQUEST_400)
+            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
             return
         }
-        res.sendStatus(StatusCode.NO_CONTENT_204)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         return
     }
 )
@@ -37,10 +38,10 @@ authRoute.post('/registration-email-resending',
     async (req: Request, res: Response) => {
         const user = await authService.resendCode(req.body.email)
         if (!user) {
-            res.sendStatus(StatusCode.BAD_REQUEST_400);
+            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
             return
         }
-        res.sendStatus(StatusCode.NO_CONTENT_204)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         return
     }
 )
@@ -52,10 +53,10 @@ authRoute.post('/registration-confirmation',
         const code = req.body.code;
         const corfirmResult = await authService.confirmEmail(code);
         if (!corfirmResult) {
-            res.sendStatus(StatusCode.BAD_REQUEST_400)
+            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
             return
         }
-        res.sendStatus(StatusCode.NO_CONTENT_204)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         return
     }
 )
@@ -70,10 +71,10 @@ authRoute.post('/login',
         console.log(user)
         if (user) {
             const token = await jwtService.createJWT(user)
-            res.status(StatusCode.OK_200).send({accessToken: token})
+            res.status(HTTP_STATUSES.OK_200).send({accessToken: token})
             console.log(token)
         } else {
-            res.sendStatus(StatusCode.NOT_AUTHORIZED_401)
+            res.sendStatus(HTTP_STATUSES.NOT_AUTHORIZED_401)
         }
     }
 )
@@ -84,8 +85,9 @@ authRoute.get('/me',
         const userId = req.user!.id
         const currentUser = await UsersQueryRepository.findCurrentUser(userId)
         console.log(currentUser)
+
         if (!currentUser)
-            return res.sendStatus(StatusCode.NOT_FOUND_404)
+            return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         res.send({
             email: currentUser.email,
             login: currentUser.login,
@@ -93,3 +95,34 @@ authRoute.get('/me',
         })
         return
     })
+
+authRoute.post('/refresh-token',
+    verifyTokenInCookie,
+    async (req: Request, res: Response) => {
+        const refreshToken = req.cookies.refreshToken;
+        const decodedRefreshToken = await jwtService.verifyRefreshToken(refreshToken);
+        if (decodedRefreshToken) {
+            const newAccessToken = await jwtService.generateToken( decodedRefreshToken, '10s');
+            const newRefreshToken = await jwtService.generateToken( decodedRefreshToken , '20s');
+            res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true});
+            res.send({ accessToken: newAccessToken });
+
+        } else {
+            res.sendStatus(HTTP_STATUSES.NOT_AUTHORIZED_401)
+        }
+    });
+
+authRoute.post('/auth/logout',
+    verifyTokenInCookie,
+    inputValidation,
+    async (req: Request, res: Response) => {
+        const refreshToken = req.cookies.refreshToken;
+        const decodedRefreshToken = await jwtService.verifyRefreshToken(refreshToken);
+
+        if (decodedRefreshToken) {
+            await blacklistTokens.insertOne({...refreshToken})
+            res.send(HTTP_STATUSES.OK_200);
+        } else {
+            res.status(HTTP_STATUSES.NOT_AUTHORIZED_401)
+        }
+    });

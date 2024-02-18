@@ -5,6 +5,7 @@ import {PostDbModel} from "../models/posts/posts-models";
 import {UserDbModel} from "../models/users/users-models";
 import {CommentDbModel} from "../models/comments/comment-model";
 import {validateUsers} from "../validators/user-validation";
+import {TokenDbModel} from "../models/auth/auth-models";
 
 export const db: DBType = {
     blogs: [],
@@ -25,6 +26,8 @@ export const blogsCollection = database.collection<BlogDbModel>('blogs');
 export const postsCollection = database.collection<PostDbModel>('posts');
 export const usersCollection = database.collection<UserDbModel>('users');
 export const commentsCollection = database.collection<CommentDbModel>('comments')
+export const blacklistTokens = database.collection<TokenDbModel>('tokens')
+
 
 export const runDB = async () => {
     try {

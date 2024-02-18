@@ -9,13 +9,23 @@ import {usersRouter} from "./routes/users-route";
 import {commentsRoute} from "./routes/comments-route";
 import {emailRoute} from "./routes/emailRoute";
 
+
+export const RouterPaths = {
+    blogs: '/blogs',
+    posts: '/posts',
+    testing: '/testing',
+    users: '/users',
+    comments: '/comments',
+    auth: '/auth',
+    email: '/email',
+}
 export const app: Express = express();
 morganBody(app);
 app.use(express.json())
 
 app.use(bodyParser.json())
 app.get('/', (req, res) => {
-    res.send("HEllO Sprint 2 HW 2")
+    res.send("HEllO Sprint 2 HW 4")
 })
 app.get('/env', (req, res) => {
     res.send({

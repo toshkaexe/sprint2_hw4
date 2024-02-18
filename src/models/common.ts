@@ -10,7 +10,7 @@ export const AvailableResolutions = [
     "P1440",
     "P2160"];
 
-export enum StatusCode {
+export enum HTTP_STATUSES {
     OK_200 = 200,
     CREATED_201 = 201,
     NO_CONTENT_204 = 204,

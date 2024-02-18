@@ -10,7 +10,7 @@ import {
     PostBody,
     RequestWithBody,
     RequestWithParams,
-    RequestWithParamsAndBody, StatusCode
+    RequestWithParamsAndBody, HTTP_STATUSES
 } from "../models/common";
 import {randomUUID} from "crypto";
 import {blogRoute} from "./blog-route";
@@ -47,15 +47,15 @@ postRoute.post('/',
         if (!newPostId) return res.sendStatus(404);
 
         const newPost = await PostsQueryRepository.findPostById(newPostId)
-        newPost ? res.status(StatusCode.CREATED_201).send(newPost) :
-            res.sendStatus(StatusCode.NOT_FOUND_404)
+        newPost ? res.status(HTTP_STATUSES.CREATED_201).send(newPost) :
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     })
 
 postRoute.get('/:postId', async (req: Request, res: Response) => {
     const foundPost: OutputPostModel | null =
         await PostsQueryRepository.findPostById(req.params.postId)
-    foundPost ? res.status(StatusCode.OK_200).send(foundPost) : res.sendStatus(StatusCode.NOT_FOUND_404)
+    foundPost ? res.status(HTTP_STATUSES.OK_200).send(foundPost) : res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
 })
 //put
 postRoute.put('/:postId',
@@ -69,15 +69,15 @@ postRoute.put('/:postId',
         const postExist = await PostsQueryRepository.findPostById(postId)
 
         if (!blogExist) {
-            res.status(StatusCode.NOT_FOUND_404).send("error blog")
+            res.status(HTTP_STATUSES.NOT_FOUND_404).send("error blog")
             return
         }
         if (!postExist) {
-            res.status(StatusCode.NOT_FOUND_404).send("error post")
+            res.status(HTTP_STATUSES.NOT_FOUND_404).send("error post")
             return
         }
         await PostsService.updatePost(postId, req.body)
-        res.status(StatusCode.NO_CONTENT_204).send('No content')
+        res.status(HTTP_STATUSES.NO_CONTENT_204).send('No content')
     })
 
 //+
@@ -85,7 +85,7 @@ postRoute.delete('/:postId',
     authMiddleware,
     async (req: Request, res: Response) => {
         const isDeleted = await PostsService.deletePost(req.params.postId)
-        isDeleted ? res.sendStatus(StatusCode.NO_CONTENT_204) : res.sendStatus(StatusCode.NOT_FOUND_404)
+        isDeleted ? res.sendStatus(HTTP_STATUSES.NO_CONTENT_204) : res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     })
 
 
@@ -95,7 +95,7 @@ postRoute.get('/:postId/comments',
         const postId = req.params.postId
         const foundPost: OutputPostModel | null = await PostsQueryRepository.findPostById(postId)
         if (!foundPost) {
-            res.sendStatus(StatusCode.NOT_FOUND_404)
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
             return
         }
 
@@ -103,7 +103,7 @@ postRoute.get('/:postId/comments',
         const comments =
             await commentsQueryRepository.getCommentsForPost(req.params.postId, pageNumber, pageSize, sortBy, sortDirection)
         if (!comments) {
-            res.sendStatus(StatusCode.NOT_FOUND_404)
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
             return
         }
         res.send(comments)
@@ -124,8 +124,8 @@ postRoute.post('/:postId/comments',
         const newComment: CommentOutputModel | null =
             await CommentsService.CreateComment({userId, userLogin}, postId, content)
         if (!newComment) {
-            return res.sendStatus(StatusCode.NOT_FOUND_404)
+            return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
-        return res.status(StatusCode.CREATED_201).send(newComment)
+        return res.status(HTTP_STATUSES.CREATED_201).send(newComment)
     }
 )

@@ -1,6 +1,6 @@
 import {Router, Response, Request} from "express";
 import {getPageOptions} from "../types/type";
-import {StatusCode} from "../models/common";
+import {HTTP_STATUSES} from "../models/common";
 import {authMiddleware} from "../middleware/auth-middlewares";
 import {UsersQueryRepository} from "../repositories/user-query-repository";
 import {UsersService} from "../domain/users-service";
@@ -29,13 +29,13 @@ usersRouter.post('/',
 
     async (req: Request, res: Response): Promise<void> => {
         const newUser = await UsersService.createUser(req.body)
-        res.status(StatusCode.CREATED_201).send(newUser)
+        res.status(HTTP_STATUSES.CREATED_201).send(newUser)
     })
 
 usersRouter.delete('/:id',
     authMiddleware,
     async (req: Request, res: Response) => {
         const isDeleted = await UsersService.deleteUser(req.params.id)
-        isDeleted ? res.sendStatus(StatusCode.NO_CONTENT_204) :
-            res.sendStatus(StatusCode.NOT_FOUND_404)
+        isDeleted ? res.sendStatus(HTTP_STATUSES.NO_CONTENT_204) :
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     })

@@ -1,5 +1,5 @@
 import {Router, Request, Response} from 'express';
-import {StatusCode} from "../models/common";
+import {HTTP_STATUSES} from "../models/common";
 import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "../db/db";
 
 export const testingRoute = Router({})
@@ -10,7 +10,7 @@ testingRoute.delete('/all-data', async (req: Request, res: Response) => {
     await usersCollection.deleteMany({});
     await commentsCollection.deleteMany({})
     //await database.dropDatabase();
-    res.sendStatus(StatusCode.NO_CONTENT_204);
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 
 
 });

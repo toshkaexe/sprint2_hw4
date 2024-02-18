@@ -57,7 +57,7 @@ yarn ts-jest config:init
 
 2. В корне проекта создаем папку  __tests__
 
-3. В папке  __tests__  создаем файл  name.e2e.tests.ts  (в качестве примера создан файл blogs.e2e.tests.ts)
+3. В папке  __tests__  создаем файл  name.e2e.test.ts  (в качестве примера создан файл blogs.e2e.tests.ts)
 
 
 

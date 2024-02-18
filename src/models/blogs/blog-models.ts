@@ -16,6 +16,13 @@ export type CreateBlogModel = {
     isMembership: boolean
 }
 
+export type CreateBlogInputModel = {
+    name: string,
+    description: string,
+    websiteUrl: string
+}
+
+
 export type UpdateBlogModel = {
     name: string,
     description: string,

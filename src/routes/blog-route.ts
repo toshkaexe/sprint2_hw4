@@ -4,7 +4,7 @@ import {authMiddleware, bearerAuth} from "../middleware/auth-middlewares";
 import {blogValidation, blogValidationPostToBlog, nameValidation} from "../validators/blog-validation";
 import {randomUUID} from "crypto";
 import {db} from '../db/db'
-import {StatusCode
+import {HTTP_STATUSES
 } from "../models/common";
 import {CreateBlogModel, OutputBlogModel, Paginator} from "../models/blogs/blog-models";
 import {ObjectId} from "mongodb";
@@ -36,7 +36,7 @@ blogRoute.get('/:blogId',
 
     async (req: Request, res: Response): Promise<void> => {
         const foundBlog: OutputBlogModel | null = await BlogsQueryRepository.findBlogById(req.params.blogId)
-        foundBlog ? res.status(StatusCode.OK_200).send(foundBlog) : res.sendStatus(StatusCode.NOT_FOUND_404)
+        foundBlog ? res.status(HTTP_STATUSES.OK_200).send(foundBlog) : res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
 
     })
 
@@ -66,7 +66,7 @@ blogRoute.post('/',
     blogValidation(),
     async (req: Request, res: Response): Promise<void> => {
         const newBlog = await BlogService.createBlog(req.body)
-        res.status(StatusCode.CREATED_201).send(newBlog)
+        res.status(HTTP_STATUSES.CREATED_201).send(newBlog)
     })
 
 // create post for specified blog
@@ -79,9 +79,9 @@ blogRoute.post('/:blogId/posts',
 
         const newPost = await PostsQueryRepository.findPostById(newPostId)
         if (!newPost) {
-            return res.sendStatus(StatusCode.NOT_FOUND_404)
+            return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
-        return res.status(StatusCode.CREATED_201).send(newPost)
+        return res.status(HTTP_STATUSES.CREATED_201).send(newPost)
     }
 )
 
@@ -91,15 +91,15 @@ blogRoute.put('/:blogId',
     async (req: Request, res: Response): Promise<void> => {
         const blogId = req.params.blogId
         const isUpdated = await BlogService.updateBlog(blogId, req.body)
-        isUpdated ? res.status(StatusCode.NO_CONTENT_204)
+        isUpdated ? res.status(HTTP_STATUSES.NO_CONTENT_204)
                 .send(BlogsQueryRepository.findBlogById(blogId)) :
-            res.sendStatus(StatusCode.NOT_FOUND_404)
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     })
 
 blogRoute.delete('/:blogId',
     authMiddleware,
     async (req: Request, res: Response) => {
         const isDeleted = await BlogService.deleteBlog(req.params.blogId)
-        isDeleted ? res.sendStatus(StatusCode.NO_CONTENT_204) :
-            res.sendStatus(StatusCode.NOT_FOUND_404)
+        isDeleted ? res.sendStatus(HTTP_STATUSES.NO_CONTENT_204) :
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     })
