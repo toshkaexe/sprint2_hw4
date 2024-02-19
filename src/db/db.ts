@@ -29,6 +29,9 @@ export const commentsCollection = database.collection<CommentDbModel>('comments'
 export const blacklistTokens = database.collection<TokenDbModel>('tokens')
 
 
+
+
+
 export const runDB = async () => {
     try {
         await client.connect()

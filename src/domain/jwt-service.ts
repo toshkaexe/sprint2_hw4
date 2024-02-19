@@ -31,6 +31,8 @@ export class jwtService {
     static async verifyRefreshToken(refreshToken: any) {
         const secretKey = 'your_secret_key';
         try {
+            console.log("rrrrrrrrrr")
+            console.log(refreshToken)
             const res: any = jwt.verify(refreshToken, secretKey);
             console.log(res, '222')
 

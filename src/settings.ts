@@ -8,6 +8,8 @@ import {authRoute} from "./routes/auth-route";
 import {usersRouter} from "./routes/users-route";
 import {commentsRoute} from "./routes/comments-route";
 import {emailRoute} from "./routes/emailRoute";
+import {cookie} from "express-validator";
+import cookieParser from "cookie-parser";
 
 
 export const RouterPaths = {
@@ -19,7 +21,9 @@ export const RouterPaths = {
     auth: '/auth',
     email: '/email',
 }
+
 export const app: Express = express();
+app.use(cookieParser())
 morganBody(app);
 app.use(express.json())
 

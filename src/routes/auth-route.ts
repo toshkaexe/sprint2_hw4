@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express';
 import {HTTP_STATUSES} from "../models/common";
-import {blacklistTokens, blogsCollection, postsCollection} from "../db/db";
+import {blacklistTokens, blogsCollection, database, postsCollection} from "../db/db";
 import {WithId} from "mongodb";
 import {UserDbModel} from "../models/users/users-models";
 import {UsersService} from "../domain/users-service";
@@ -16,6 +16,8 @@ import {
 } from "../middleware/user-already-exist";
 import {authService} from "../domain/auth-service";
 import {verifyTokenInCookie} from "../middleware/verifyTokenInCookie";
+import {TokenDbModel} from "../models/auth/auth-models";
+import request from "supertest";
 
 
 export const authRoute = Router({})
@@ -70,9 +72,13 @@ authRoute.post('/login',
         console.log("3333333333333333333")
         console.log(user)
         if (user) {
-            const token = await jwtService.createJWT(user)
-            res.status(HTTP_STATUSES.OK_200).send({accessToken: token})
-            console.log(token)
+            const newAccessToken = await jwtService.generateToken( user._id.toString(), '10s');
+            const newRefreshToken = await jwtService.generateToken( user._id.toString() , '20s');
+
+            res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true});
+            res.status(HTTP_STATUSES.OK_200).send({accessToken: newAccessToken})
+
+
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_AUTHORIZED_401)
         }
@@ -99,8 +105,14 @@ authRoute.get('/me',
 authRoute.post('/refresh-token',
     verifyTokenInCookie,
     async (req: Request, res: Response) => {
-        const refreshToken = req.cookies.refreshToken;
+        console.log("-----------")
+        console.log(req.cookies)
+    const refreshToken = req.cookies.refreshToken;
         const decodedRefreshToken = await jwtService.verifyRefreshToken(refreshToken);
+        console.log("==")
+        console.log(decodedRefreshToken)
+        await blacklistTokens.insertOne({accessToken: refreshToken});
+
         if (decodedRefreshToken) {
             const newAccessToken = await jwtService.generateToken( decodedRefreshToken, '10s');
             const newRefreshToken = await jwtService.generateToken( decodedRefreshToken , '20s');

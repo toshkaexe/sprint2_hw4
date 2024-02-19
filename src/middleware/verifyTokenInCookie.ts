@@ -14,6 +14,7 @@ export const verifyTokenInCookie = async (req: Request,
                                    res: Response,
                                    next: NextFunction) => {
 
+
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
@@ -23,21 +24,26 @@ export const verifyTokenInCookie = async (req: Request,
     try {
         const decodedToken = await jwtService.verifyRefreshToken(refreshToken);
 
-        const tokenExpired = decodedToken.exp * 1000 < Date.now() + 20 * 1000;
+        console.log("-------------")
+        //const tokenExpired = decodedToken.exp * 1000 < Date.now() + 20 * 1000;
 
-        if (tokenExpired) {
-            return res.sendStatus(HTTP_STATUSES.NOT_AUTHORIZED_401);
-        }
+       // if (tokenExpired) {
+         //   return res.sendStatus(HTTP_STATUSES.NOT_AUTHORIZED_401);
+        //}
 
         const tokenExists = await blacklistTokens.findOne({ refreshToken });
+        console.log("********")
 
-        if (tokenExists) {
+            if (tokenExists) {
+                console.log("+++++++")
             return res.sendStatus(HTTP_STATUSES.NOT_AUTHORIZED_401);
         }
 
         next();
 
     } catch (error) {
+
+        console.log("ggggggggggggggggg")
         return res.status(HTTP_STATUSES.NOT_AUTHORIZED_401)
     }
 };
