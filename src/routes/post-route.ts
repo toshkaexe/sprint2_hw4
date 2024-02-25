@@ -5,12 +5,7 @@ import {blogValidation, nameValidation} from "../validators/blog-validation";
 import {PostsRepository} from "../repositories/posts-repository";
 
 import {
-    BlogBody,
-    Params,
-    PostBody,
-    RequestWithBody,
-    RequestWithParams,
-    RequestWithParamsAndBody, HTTP_STATUSES
+  HTTP_STATUSES
 } from "../models/common";
 import {randomUUID} from "crypto";
 import {blogRoute} from "./blog-route";

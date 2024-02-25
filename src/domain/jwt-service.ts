@@ -12,8 +12,12 @@ export class jwtService {
         }
 
         static async getUserIdByToken(token: string) {
+            const secretKey = 'your_secret_key';
             try {
-                const result: any = jwt.verify(token, secretWord)
+                console.log("token" + token);
+                const result: any = jwt.verify(token, secretKey)
+                console.log("result=" + result);
+
                 return new ObjectId(result.userId)
             } catch (error) {
                 return null
@@ -31,10 +35,9 @@ export class jwtService {
     static async verifyRefreshToken(refreshToken: any) {
         const secretKey = 'your_secret_key';
         try {
-            console.log("rrrrrrrrrr")
-            console.log(refreshToken)
+
             const res: any = jwt.verify(refreshToken, secretKey);
-            console.log(res, '222')
+
 
             return res.userId
         } catch (error) {

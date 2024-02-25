@@ -44,6 +44,8 @@ export const bearerAuth = async (req: Request,
                                  res: Response,
                                  next: NextFunction) => {
     const auth = req.headers['authorization']
+    console.log("auth=");
+    console.log(auth);
     if (!auth) {
         return res.send(HTTP_STATUSES.NOT_AUTHORIZED_401)
     }
